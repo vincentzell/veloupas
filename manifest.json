@@ -3,13 +3,21 @@
   "short_name": "Vélotaf",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#1e1e1e",
+  "background_color": "#3498db",
   "theme_color": "#3498db",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+	  "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
+	  "purpose": "any maskable"
     }
   ]
 }
