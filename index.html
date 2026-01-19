@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Météo Vélotaf</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="theme-color" content="#3498db">
+    <style>
+        /* --- VARIABLES --- */
+        :root {
+            --bg-color: #f4f7f6; --card-bg: #ffffff; --text-main: #2c3e50;
+            --text-muted: #7f8c8d; --input-border: #ddd; --input-bg: #fff;
+            
+            /* VERT (Go) */
+            --go-bg: #eafaf1; --go-text: #27ae60; --go-border: #d5f5e3;
+            
+            /* ORANGE (No-Go) */
+            --no-go-bg: #fff8e1; --no-go-text: #d35400; --no-go-border: #fad7a0;
+
+            --btn-primary: #3498db; --btn-hover: #2980b9;
+        }
+
+        body.dark-mode {
+            --bg-color: #1a1a2e; --card-bg: #16213e; --text-main: #e0e0e0;
+            --text-muted: #a0a0a0; --input-border: #444; --input-bg: #0f3460;
+            
+            /* VERT (Dark) */
+            --go-bg: #1e3a29; --go-text: #4cd17f; --go-border: #14522d;
+            
+            /* ORANGE (Dark) */
+            --no-go-bg: #3e2723; --no-go-text: #ffcc80; --no-go-border: #6d4c41;
+
+            --btn-primary: #4facfe; --btn-hover: #00f2fe;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color); color: var(--text-main);
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; margin: 0; padding: 15px; box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent; overflow: hidden;
+            transition: background-color 0.8s ease;
+        }
+
+        /* --- BACKGROUND --- */
+        #bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; overflow: hidden; }
+        
+        #bg-animation.sunny { background: radial-gradient(circle at 90% 10%, rgba(255, 223, 0, 0.7) 0%, rgba(255, 223, 0, 0.2) 40%, transparent 70%); transition: background 1s ease; }
+        body.dark-mode #bg-animation.sunny { background: radial-gradient(circle at 90% 10%, rgba(255, 223, 0, 0.8) 0%, rgba(255, 223, 0, 0.15) 35%, transparent 65%); }
+
+        /* --- PARTICULES --- */
+        .particle { position: absolute; pointer-events: none; }
+        .rain-drop { background: linear-gradient(to bottom, transparent, #3498db); width: 2px; border-radius: 2px; opacity: 0.8; }
+        body.dark-mode .rain-drop { background: linear-gradient(to bottom, transparent, #aabcca); opacity: 0.5; }
+        .snowflake { background: #b0c4de; border-radius: 50%; box-shadow: 0 0 2px rgba(0,0,0,0.1); }
+        body.dark-mode .snowflake { background: white; box-shadow: 0 0 5px rgba(255,255,255,0.8); }
+        .cloud-particle { background: #dbe7f0; border-radius: 50px; opacity: 0.6; filter: blur(20px); }
+        body.dark-mode .cloud-particle { background: #555; opacity: 0.2; }
+
+        /* --- UI CARTE --- */
+        .container {
+            background: rgba(255, 255, 255, 0.85); padding: 2rem; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 400px; width: 100%;
+            text-align: center; position: relative; z-index: 10; 
+            backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.4);
+        }
+        body.dark-mode .container { background: rgba(22, 33, 62, 0.9); border: 1px solid rgba(255,255,255,0.1); }
+
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        h1 { margin: 0; font-size: 1.5rem; text-align: left; }
+        .settings-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 10px; color: var(--text-main); }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { text-align: left; display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem;}
+        .form-group input { background-color: var(--input-bg); color: var(--text-main); border: 2px solid var(--input-border); width: 100%; padding: 10px; box-sizing: border-box; border-radius: 8px; font-size: 1rem; }
+        
+        /* CORRECTION : Style pour les horaires */
+        .time-row { display: flex; gap: 10px; align-items: center; }
+        /* On permet à l'input de prendre plus de place et on force une largeur mini */
+        .time-row input { text-align: center; width: auto; min-width: 95px; flex: 1; }
+        .time-label { width: 100px; text-align: left; font-weight: 600; font-size: 0.9rem;}
+
+        button.action-btn { background-color: var(--btn-primary); color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1.1rem; margin-top: 15px; }
+        button.action-btn:hover { background-color: var(--btn-hover); }
+
+        .toggle-group { display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid var(--input-border); padding-bottom: 15px; }
+        .toggle-container { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.8rem; font-weight: 600; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--btn-primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .view-section { display: none; animation: fadeIn 0.3s ease-out; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        #result { margin-top: 20px; display: none; }
+        .verdict { font-size: 2rem; font-weight: 800; display: block; margin: 15px 0; }
+        .go { color: var(--go-text); background: var(--go-bg); border: 1px solid var(--go-border); padding: 20px; border-radius: 16px; }
+        .no-go { color: var(--no-go-text); background: var(--no-go-bg); border: 1px solid var(--no-go-border); padding: 20px; border-radius: 16px; }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-save { flex: 2; background-color: #27ae60; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem;}
+        .btn-cancel { flex: 1; background-color: #95a5a6; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 1rem;}
+        
+        .debug-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .debug-btn { background: var(--bg-color); border: 1px solid var(--text-muted); color: var(--text-main); padding: 8px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div id="bg-animation"></div>
+
+<div class="container">
+    <div id="mainView" class="view-section active">
+        <header>
+            <h1>🚲 Météo Vélotaf</h1>
+            <button class="settings-btn" onclick="toggleView('settings')">⚙️</button>
+        </header>
+        <div id="loadingMessage" style="display:none; color: var(--text-muted); margin: 20px 0;">Chargement...</div>
+        
+        <div id="result">
+            <span id="icon" style="font-size: 5rem; display: block; margin-bottom: 10px;"></span>
+            <span id="verdictText" class="verdict"></span>
+            
+            <div id="detailsText" style="font-size: 1rem; line-height: 1.5; text-align: left;"></div>
+            
+            <div id="forecastSummary" style="margin: 15px 0; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.1); font-size: 0.9rem; color: var(--text-muted); font-style: italic;"></div>
+            
+            <button class="action-btn" onclick="checkWeather()">Rafraîchir</button>
+        </div>
+
+        <div id="welcome" style="display:none; margin-top: 30px;">
+            <p style="font-size: 1.1rem; margin-bottom: 20px;">Bonjour ! 👋<br>Configurez vos horaires.</p>
+            <button class="action-btn" onclick="toggleView('settings')">Configurer</button>
+        </div>
+    </div>
+
+    <div id="settingsView" class="view-section">
+        <header><h1>Paramètres</h1></header>
+        
+        <div class="toggle-group">
+            <div class="toggle-container">
+                <span>Mode Sombre</span>
+                <label class="switch"><input type="checkbox" id="darkModeToggle" onchange="togglePref('darkMode')"><span class="slider"></span></label>
+            </div>
+            <div class="toggle-container">
+                <span>Animations</span>
+                <label class="switch"><input type="checkbox" id="animationsToggle" onchange="togglePref('animations')"><span class="slider"></span></label>
+            </div>
+        </div>
+
+        <div class="form-group"><label>Ville :</label><input type="text" id="setCity" placeholder="Ex: Lyon"></div>
+
+        <div style="background: var(--bg-color); padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+            <label style="margin-bottom: 8px; display:block; color:var(--btn-primary);">🕒 Horaires de trajet</label>
+            <div class="form-group time-row">
+                <span class="time-label">Aller</span>
+                <input type="time" id="setGoStart">
+                <span>à</span>
+                <input type="time" id="setGoEnd">
+            </div>
+            <div class="form-group time-row">
+                <span class="time-label">Retour</span>
+                <input type="time" id="setReturnStart">
+                <span>à</span>
+                <input type="time" id="setReturnEnd">
+            </div>
+        </div>
+
+        <div class="form-group"><label>Min Temp (°C) :</label><input type="number" id="setMinTemp"></div>
+        <div class="form-group"><label>Max Temp (°C) :</label><input type="number" id="setMaxTemp"></div>
+        <div class="form-group"><label>Vent Max (km/h) :</label><input type="number" id="setMaxWind"></div>
+        
+        <div class="btn-group">
+            <button class="btn-cancel" onclick="toggleView('main')">Retour</button>
+            <button class="btn-save" onclick="saveSettings()">Enregistrer</button>
+        </div>
+
+        <div style="margin-top: 20px; padding-top: 10px; border-top: 1px dashed var(--text-muted);">
+            <div onclick="document.getElementById('debugPanel').style.display = document.getElementById('debugPanel').style.display === 'none' ? 'block' : 'none'" style="cursor: pointer; text-align: center; color: var(--text-muted); font-size: 0.8rem;">🐞 Debug</div>
+            <div id="debugPanel" style="display:none; margin-top: 10px;">
+                <div class="debug-grid">
+                    <button class="debug-btn" onclick="sim('clear')">☀️</button>
+                    <button class="debug-btn" onclick="sim('rain')">🌧️</button>
+                    <button class="debug-btn" onclick="sim('snow')">❄️</button>
+                    <button class="debug-btn" onclick="sim('wind')">💨</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); }); }
+    
+    const defaultPrefs = { 
+        city: "", 
+        minTemp: 5, maxTemp: 35, maxWind: 30, 
+        darkMode: false, animations: true,
+        goStart: "08:00", goEnd: "09:00",
+        returnStart: "17:00", returnEnd: "18:00"
+    };
+    
+    let userPrefs = {}; let lastWeatherCode = null; let animationInterval = null; 
+
+    window.onload = function() {
+        loadSettings(); applyPreferences();
+        if (userPrefs.city) checkWeather(); else document.getElementById('welcome').style.display = 'block';
+    };
+
+    function toggleView(viewName) {
+        const main = document.getElementById('mainView'); const settings = document.getElementById('settingsView');
+        if (viewName === 'settings') {
+            document.getElementById('setCity').value = userPrefs.city;
+            document.getElementById('setMinTemp').value = userPrefs.minTemp;
+            document.getElementById('setMaxTemp').value = userPrefs.maxTemp;
+            document.getElementById('setMaxWind').value = userPrefs.maxWind;
+            
+            document.getElementById('setGoStart').value = userPrefs.goStart;
+            document.getElementById('setGoEnd').value = userPrefs.goEnd;
+            document.getElementById('setReturnStart').value = userPrefs.returnStart;
+            document.getElementById('setReturnEnd').value = userPrefs.returnEnd;
+
+            document.getElementById('darkModeToggle').checked = userPrefs.darkMode;
+            document.getElementById('animationsToggle').checked = userPrefs.animations;
+            main.classList.remove('active'); settings.classList.add('active');
+        } else { settings.classList.remove('active'); main.classList.add('active'); }
+    }
+
+    function togglePref(prefName) {
+        userPrefs[prefName] = document.getElementById(prefName + 'Toggle').checked;
+        applyPreferences(); localStorage.setItem('veloTafPrefs', JSON.stringify(userPrefs));
+    }
+
+    function applyPreferences() {
+        if (userPrefs.darkMode) document.body.classList.add('dark-mode'); else document.body.classList.remove('dark-mode');
+        document.querySelector('meta[name="theme-color"]').setAttribute("content", userPrefs.darkMode ? "#1a1a2e" : "#3498db");
+        if (!userPrefs.animations) stopAnimations();
+        else if (lastWeatherCode !== null) updateAnimation(lastWeatherCode);
+    }
+
+    function loadSettings() { const saved = localStorage.getItem('veloTafPrefs'); userPrefs = saved ? { ...defaultPrefs, ...JSON.parse(saved) } : { ...defaultPrefs }; }
+    
+    function saveSettings() {
+        const newCity = document.getElementById('setCity').value.trim();
+        if (!newCity) return alert("Ville requise.");
+        userPrefs.city = newCity;
+        userPrefs.minTemp = parseFloat(document.getElementById('setMinTemp').value);
+        userPrefs.maxTemp = parseFloat(document.getElementById('setMaxTemp').value);
+        userPrefs.maxWind = parseFloat(document.getElementById('setMaxWind').value);
+        
+        userPrefs.goStart = document.getElementById('setGoStart').value;
+        userPrefs.goEnd = document.getElementById('setGoEnd').value;
+        userPrefs.returnStart = document.getElementById('setReturnStart').value;
+        userPrefs.returnEnd = document.getElementById('setReturnEnd').value;
+
+        localStorage.setItem('veloTafPrefs', JSON.stringify(userPrefs)); toggleView('main'); checkWeather();
+    }
+
+    async function checkWeather() {
+        const resultDiv = document.getElementById('result'); const loader = document.getElementById('loadingMessage'); const welcome = document.getElementById('welcome');
+        stopAnimations();
+        welcome.style.display = 'none'; resultDiv.style.display = 'none'; loader.style.display = 'block';
+        try {
+            const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${userPrefs.city}&count=1&language=fr&format=json`);
+            const geoData = await geoRes.json();
+            if (!geoData.results) throw new Error("Ville introuvable.");
+            
+            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${geoData.results[0].latitude}&longitude=${geoData.results[0].longitude}&current_weather=true&hourly=temperature_2m,precipitation_probability,weathercode,windspeed_10m&timezone=auto`);
+            const weatherData = await weatherRes.json();
+            
+            analyze(weatherData, geoData.results[0].name);
+        } catch (error) { alert(error.message); welcome.style.display = 'block'; } finally { loader.style.display = 'none'; }
+    }
+
+    function analyze(data, realCityName) {
+        const hourly = data.hourly;
+        const currentHour = new Date().getHours();
+        
+        const goStartH = parseInt(userPrefs.goStart.split(':')[0]);
+        const goEndH = parseInt(userPrefs.goEnd.split(':')[0]);
+        const retStartH = parseInt(userPrefs.returnStart.split(':')[0]);
+        const retEndH = parseInt(userPrefs.returnEnd.split(':')[0]);
+
+        let checkDayOffset = 0;
+        let checkMorning = true;
+        let checkEvening = true;
+
+        if (currentHour >= retEndH) {
+            checkDayOffset = 24; 
+        } else if (currentHour >= goEndH) {
+            checkMorning = false; 
+        }
+
+        let issues = [];
+        let worstCode = 0;
+        
+        function scanRange(startH, endH, label) {
+            let rangeIssues = [];
+            let tempMinRange = 100, tempMaxRange = -100, windMaxRange = 0;
+            
+            for (let h = startH; h <= endH; h++) {
+                const idx = h + checkDayOffset;
+                const t = hourly.temperature_2m[idx];
+                const w = hourly.windspeed_10m[idx];
+                const c = hourly.weathercode[idx];
+
+                if(t < tempMinRange) tempMinRange = t;
+                if(t > tempMaxRange) tempMaxRange = t;
+                if(w > windMaxRange) windMaxRange = w;
+                
+                if(isWorse(c, worstCode)) worstCode = c;
+
+                if (t < userPrefs.minTemp) rangeIssues.push(`❄️ Froid (${t}°C)`);
+                if (t > userPrefs.maxTemp) rangeIssues.push(`🥵 Chaud (${t}°C)`);
+                if (w > userPrefs.maxWind) rangeIssues.push(`💨 Vent (${w} km/h)`);
+                if ([51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,99].includes(c)) rangeIssues.push(`🌧️ Pluie`);
+                if ([71,73,75,77,85,86].includes(c)) rangeIssues.push(`❄️ Neige`);
+            }
+
+            if (rangeIssues.length > 0) {
+                let uniqueIssues = [...new Set(rangeIssues)];
+                return `<strong style="color:var(--no-go-text)">${label} (${startH}h-${endH}h) :</strong><br>` + uniqueIssues.join(', ');
+            } else {
+                return `<strong style="color:var(--go-text)">${label} (${startH}h-${endH}h) :</strong> ✅ Conditions OK (${Math.round(tempMinRange)}°C)`;
+            }
+        }
+
+        if (checkMorning) {
+            const res = scanRange(goStartH, goEndH, checkDayOffset===24 ? "Demain Matin" : "Ce Matin");
+            issues.push(res);
+        }
+        if (checkEvening) {
+            const res = scanRange(retStartH, retEndH, checkDayOffset===24 ? "Demain Soir" : "Ce Soir");
+            issues.push(res);
+        }
+
+        const isGlobalNoGo = issues.some(i => i.includes('var(--no-go-text)'));
+
+        if (userPrefs.animations) updateAnimation(worstCode);
+        
+        const resultDiv = document.getElementById('result');
+        const icon = document.getElementById('icon');
+        const verdict = document.getElementById('verdictText');
+        const details = document.getElementById('detailsText');
+        const summary = document.getElementById('forecastSummary');
+
+        resultDiv.className = isGlobalNoGo ? 'no-go' : 'go';
+        
+        // CORRECTION TEXTE ICI
+        if (!isGlobalNoGo) {
+            icon.innerText = "🚲✅";
+            verdict.innerText = "C'est bon !";
+        } else {
+            icon.innerText = "🙅‍♂️☔";
+            verdict.innerText = "À éviter";
+        }
+
+        details.innerHTML = issues.join('<br><br>');
+        summary.innerText = ` ${checkDayOffset===24 ? "Demain" : "Aujourd'hui"} à ${realCityName}.`;
+
+        resultDiv.style.display = 'block';
+    }
+    
+    function isWorse(newCode, oldCode) {
+        const bad = [51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,99,71,73,75,77,85,86];
+        const medium = [1,2,3,45,48];
+        if (bad.includes(newCode)) return true;
+        if (bad.includes(oldCode)) return false;
+        if (medium.includes(newCode)) return true;
+        return false;
+    }
+
+    function stopAnimations() { if(animationInterval) clearInterval(animationInterval); document.getElementById('bg-animation').innerHTML=''; document.getElementById('bg-animation').className=''; }
+    function updateAnimation(code) {
+        stopAnimations(); if (!userPrefs.animations) return;
+        const c = document.getElementById('bg-animation');
+        const rain=[51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,99], snow=[71,73,75,77,85,86], cloud=[1,2,3,45,48];
+        if(rain.includes(code)) animationInterval=setInterval(()=>cP('rain'),100);
+        else if(snow.includes(code)) animationInterval=setInterval(()=>cP('snow'),300);
+        else if(cloud.includes(code)) { animationInterval=setInterval(()=>cP('cloud'),2000); for(let i=0;i<3;i++)cP('cloud'); }
+        else c.classList.add('sunny');
+    }
+    function cP(t) {
+        const c=document.getElementById('bg-animation'), p=document.createElement('div'); p.className='particle';
+        p.style.left=Math.random()*100+'%';
+        if(t==='rain'){ p.classList.add('rain-drop'); p.style.height=(15+Math.random()*15)+'px'; p.style.top='-30px'; p.animate([{transform:'translateY(0)'},{transform:`translateY(${window.innerHeight+50}px)`}],{duration:800+Math.random()*500}).onfinish=()=>p.remove(); }
+        else if(t==='snow'){ p.classList.add('snowflake'); const s=3+Math.random()*5; p.style.width=s+'px';p.style.height=s+'px';p.style.top='-10px'; p.animate([{transform:'translate(0,0)'},{transform:`translate(${(Math.random()-0.5)*100}px,${window.innerHeight+20}px)`}],{duration:3000+Math.random()*5000}).onfinish=()=>p.remove(); }
+        else if(t==='cloud'){ p.classList.add('cloud-particle'); const s=100+Math.random()*200; p.style.width=s+'px';p.style.height=(s*0.6)+'px';p.style.top=Math.random()*40+'%';p.style.left='-300px'; p.animate([{transform:'translateX(0)'},{transform:`translateX(${window.innerWidth+500}px)`}],{duration:20000+Math.random()*20000}).onfinish=()=>p.remove(); }
+        c.appendChild(p);
+    }
+    function sim(s) { toggleView('main'); let d={hourly:{temperature_2m:Array(48).fill(20),windspeed_10m:Array(48).fill(10),weathercode:Array(48).fill(0)}}; 
+    if(s==='rain') d.hourly.weathercode.fill(63); if(s==='snow') d.hourly.weathercode.fill(71); if(s==='wind') d.hourly.windspeed_10m.fill(80); 
+    analyze(d, "Zone Test"); document.getElementById('forecastSummary').innerText="⚠️ MODE SIMULATION"; }
+</script>
+</body>
+</html>

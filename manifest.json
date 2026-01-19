@@ -1,0 +1,15 @@
+{
+  "name": "Météo Vélotaf",
+  "short_name": "Vélotaf",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1e1e1e",
+  "theme_color": "#3498db",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
