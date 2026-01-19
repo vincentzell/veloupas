@@ -14,32 +14,21 @@
             --text-muted: #7f8c8d; --input-border: #ddd; --input-bg: #fff;
             
             /* --- PALETTE DOUCE --- */
-            /* Vert (OK) */
-            --go-bg: #eafaf1;          /* Fond très clair */
-            --go-border: #a9dfbf;      /* Vert Pastel (utilisé pour le fond du bouton) */
-            --go-text: #219150;        /* Vert Foncé (texte) */
+            --go-bg: #eafaf1;          
+            --go-border: #a9dfbf;      
+            --go-text: #219150;        
             
-            /* Orange (NO-GO) */
-            --no-go-bg: #fdf2e9;       /* Fond très clair */
-            --no-go-border: #f5cba7;   /* Orange Pastel (utilisé pour le fond du bouton) */
-            --no-go-text: #d35400;     /* Orange Foncé (texte) */
+            --no-go-bg: #fdf2e9;       
+            --no-go-border: #f5cba7;   
+            --no-go-text: #d35400;     
             
             --btn-primary: #3498db; --btn-hover: #2980b9;
         }
         body.dark-mode {
             --bg-color: #1a1a2e; --card-bg: #16213e; --text-main: #e0e0e0;
             --text-muted: #a0a0a0; --input-border: #444; --input-bg: #0f3460;
-            
-            /* Vert Dark Mode */
-            --go-bg: #1e3a29; 
-            --go-border: #2e5c42; /* Bouton fond sombre mais distinct */
-            --go-text: #66e395;   /* Texte clair */
-            
-            /* Orange Dark Mode */
-            --no-go-bg: #3e2723; 
-            --no-go-border: #5d4037; 
-            --no-go-text: #ffcc80; 
-            
+            --go-bg: #1e3a29; --go-border: #2e5c42; --go-text: #66e395;   
+            --no-go-bg: #3e2723; --no-go-border: #5d4037; --no-go-text: #ffcc80; 
             --btn-primary: #4facfe; --btn-hover: #00f2fe;
         }
         body {
@@ -69,9 +58,13 @@
             backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.4);
         }
         body.dark-mode .container { background: rgba(22, 33, 62, 0.9); border: 1px solid rgba(255,255,255,0.1); }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        h1 { margin: 0; font-size: 1.5rem; text-align: left; }
-        .settings-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 10px; color: var(--text-main); }
+        
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; width: 100%; }
+        .header-left { flex: 1; text-align: left; font-size: 1.5rem; }
+        .header-right { flex: 1; text-align: right; }
+        h1 { flex: 2; text-align: center; margin: 0; font-size: 1.4rem; white-space: nowrap; }
+        .settings-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 0; color: var(--text-main); }
+        
         .form-group { margin-bottom: 15px; }
         .form-group label { text-align: left; display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem;}
         .form-group input { background-color: var(--input-bg); color: var(--text-main); border: 2px solid var(--input-border); width: 100%; padding: 10px; box-sizing: border-box; border-radius: 8px; font-size: 1rem; }
@@ -79,38 +72,20 @@
         .time-row input { text-align: center; width: auto; min-width: 95px; flex: 1; }
         .time-label { width: 100px; text-align: left; font-weight: 600; font-size: 0.9rem;}
         
-        /* --- STYLE DES BOUTONS DISCRETS (PASTEL) --- */
         button.action-btn { 
-            background-color: var(--btn-primary); 
-            color: white; 
-            border: none; padding: 12px; 
-            border-radius: 12px; cursor: pointer; font-weight: bold; 
-            width: 100%; font-size: 1.1rem; margin-top: 15px; 
-            transition: all 0.2s ease;
+            background-color: var(--btn-primary); color: white; border: none; padding: 12px; 
+            border-radius: 12px; cursor: pointer; font-weight: bold; width: 100%; 
+            font-size: 1.1rem; margin-top: 15px; transition: all 0.2s ease;
             display: flex; justify-content: center; align-items: center; gap: 12px;
         }
         button.action-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
         button.action-btn:active { transform: scale(0.98); }
 
-        /* Quand c'est VERT (GO) */
-        .go button.action-btn {
-            background-color: var(--go-border); /* Fond Pastel doux */
-            color: var(--go-text); /* Texte foncé lisible */
-        }
-        .go button.action-btn:hover {
-            background-color: var(--go-text); /* Devient foncé au survol */
-            color: white;
-        }
+        .go button.action-btn { background-color: var(--go-border); color: var(--go-text); }
+        .go button.action-btn:hover { background-color: var(--go-text); color: white; }
 
-        /* Quand c'est ORANGE (NO-GO) */
-        .no-go button.action-btn {
-            background-color: var(--no-go-border); /* Fond Pastel doux */
-            color: var(--no-go-text); /* Texte foncé lisible */
-        }
-        .no-go button.action-btn:hover {
-            background-color: var(--no-go-text); /* Devient foncé au survol */
-            color: white;
-        }
+        .no-go button.action-btn { background-color: var(--no-go-border); color: var(--no-go-text); }
+        .no-go button.action-btn:hover { background-color: var(--no-go-text); color: white; }
         
         .btn-emoji { font-size: 1.2rem; }
 
@@ -128,16 +103,12 @@
         #result { margin-top: 20px; display: none; }
         .verdict { font-size: 2rem; font-weight: 800; display: block; margin: 15px 0; }
         
-        /* Conteneurs de résultat */
-        /* Note: j'ai allégé les bordures pour que ça fasse plus "bloc de couleur doux" */
         .go { color: var(--go-text); background: var(--go-bg); border: 1px solid transparent; padding: 20px; border-radius: 16px; }
         .no-go { color: var(--no-go-text); background: var(--no-go-bg); border: 1px solid transparent; padding: 20px; border-radius: 16px; }
         
         .detail-item {
-            display: flex; flex-direction: column; 
-            align-items: center; text-align: center;
-            background: rgba(255,255,255,0.5); /* Plus de transparence */
-            padding: 10px 15px; border-radius: 10px; margin-bottom: 10px;
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            background: rgba(255,255,255,0.5); padding: 10px 15px; border-radius: 10px; margin-bottom: 10px;
         }
         body.dark-mode .detail-item { background: rgba(0,0,0,0.2); }
         .detail-label { font-weight: 800; margin-bottom: 4px; display: block; width: 100%; font-size: 0.95rem; }
@@ -146,7 +117,8 @@
         .btn-group { display: flex; gap: 10px; margin-top: 20px; }
         .btn-save { flex: 2; background-color: #27ae60; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem;}
         .btn-cancel { flex: 1; background-color: #95a5a6; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 1rem;}
-        .debug-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        
+        .debug-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
         .debug-btn { background: var(--bg-color); border: 1px solid var(--text-muted); color: var(--text-main); padding: 8px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; }
     </style>
 </head>
@@ -155,8 +127,11 @@
 <div class="container">
     <div id="mainView" class="view-section active">
         <header>
-            <h1>🚲 Météo Vélotaf</h1>
-            <button class="settings-btn" onclick="toggleView('settings')">⚙️</button>
+            <div class="header-left" id="headerIcon">🚲</div>
+            <h1>Météo Vélotaf</h1>
+            <div class="header-right">
+                <button class="settings-btn" onclick="toggleView('settings')">⚙️</button>
+            </div>
         </header>
         <div id="loadingMessage" style="display:none; color: var(--text-muted); margin: 20px 0;">Chargement...</div>
         <div id="result">
@@ -170,8 +145,7 @@
             </button>
             
             <button class="action-btn" id="btnTom" onclick="toggleTomorrow()">
-                <span class="btn-emoji">📅</span> Et demain ?
-            </button>
+                </button>
         </div>
         <div id="welcome" style="display:none; margin-top: 30px;">
             <p style="font-size: 1.1rem; margin-bottom: 20px;">Bonjour ! 👋<br>Configurez vos horaires.</p>
@@ -179,7 +153,11 @@
         </div>
     </div>
     <div id="settingsView" class="view-section">
-        <header><h1>Paramètres</h1></header>
+        <header>
+            <div class="header-left"></div>
+            <h1>Paramètres</h1>
+            <div class="header-right"></div>
+        </header>
         <div class="toggle-group">
             <div class="toggle-container">
                 <span>Mode Sombre</span>
@@ -217,10 +195,12 @@
             <div onclick="document.getElementById('debugPanel').style.display = document.getElementById('debugPanel').style.display === 'none' ? 'block' : 'none'" style="cursor: pointer; text-align: center; color: var(--text-muted); font-size: 0.8rem;">🐞 Debug</div>
             <div id="debugPanel" style="display:none; margin-top: 10px;">
                 <div class="debug-grid">
-                    <button class="debug-btn" onclick="sim('clear')">☀️</button>
-                    <button class="debug-btn" onclick="sim('rain')">🌧️</button>
-                    <button class="debug-btn" onclick="sim('snow')">❄️</button>
-                    <button class="debug-btn" onclick="sim('wind')">💨</button>
+                    <button class="debug-btn" onclick="sim('clear')">☀️ OK</button>
+                    <button class="debug-btn" onclick="sim('rain')">🌧️ Pluie</button>
+                    <button class="debug-btn" onclick="sim('snow')">❄️ Neige</button>
+                    <button class="debug-btn" onclick="sim('wind')">💨 Vent</button>
+                    <button class="debug-btn" onclick="sim('cold')">🥶 Froid</button>
+                    <button class="debug-btn" onclick="sim('hot')">🥵 Chaud</button>
                 </div>
             </div>
         </div>
@@ -230,7 +210,15 @@
     if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); }); }
     const defaultPrefs = { city: "", minTemp: 5, maxTemp: 35, maxWind: 30, darkMode: false, animations: true, goStart: "08:00", goEnd: "09:00", returnStart: "17:00", returnEnd: "18:00" };
     let userPrefs = {}, lastWeatherCode = null, lastWindSpeed = 0, animationInterval = null, cachedData = null, addDay = 0; 
-    window.onload = function() { loadSettings(); applyPreferences(); if (userPrefs.city) checkWeather(); else document.getElementById('welcome').style.display = 'block'; };
+    let currentCityName = "";
+
+    window.onload = function() { 
+        loadSettings(); 
+        applyPreferences(); 
+        updateEasterEgg(); 
+        if (userPrefs.city) checkWeather(); else document.getElementById('welcome').style.display = 'block'; 
+    };
+
     function toggleView(v) {
         const m = document.getElementById('mainView'), s = document.getElementById('settingsView');
         if (v === 'settings') {
@@ -268,6 +256,99 @@
         userPrefs.returnEnd = document.getElementById('setReturnEnd').value;
         localStorage.setItem('veloTafPrefs', JSON.stringify(userPrefs)); toggleView('main'); checkWeather();
     }
+
+    // --- EASTER EGG & DATES ---
+    
+    // Algorithme de Pâques
+    function getEasterDate(year) {
+        const f = Math.floor, G = year % 19, C = f(year / 100), H = (C - f(C / 4) - f((8 * C + 13) / 25) + 19 * G + 15) % 30, I = H - f(H / 28) * (1 - f(29 / (H + 1)) * f((21 - G) / 11)), J = (year + f(year / 4) + I + 2 - C + f(C / 4)) % 7, L = I - J, month = 3 + f((L + 40) / 44), day = L + 28 - 31 * f(month / 4);
+        return new Date(year, month - 1, day);
+    }
+
+    // Génère la liste de toutes les fêtes pour une année donnée
+    function getHolidays(year) {
+        const holidays = [
+            // --- FIXES ---
+            { d: new Date(year, 0, 1), e: '🥂' },   // Nouvel An
+            { d: new Date(year, 1, 14), e: '💘' },  // St Valentin
+            { d: new Date(year, 2, 17), e: '🍀' },  // St Patrick
+            { d: new Date(year, 3, 1), e: '🐟' },   // 1er Avril
+            { d: new Date(year, 4, 1), e: '🌱' },   // 1er Mai
+            { d: new Date(year, 5, 21), e: '🎸' },  // Musique
+            { d: new Date(year, 6, 14), e: '🎆' },  // 14 Juillet
+            { d: new Date(year, 9, 31), e: '🎃' },  // Halloween
+            { d: new Date(year, 11, 25), e: '🎄' }, // Noël
+        ];
+
+        // --- CALCULEES / MOBILES ---
+        
+        // 1. Pâques et dérivés
+        const easter = getEasterDate(year);
+        holidays.push({ d: easter, e: '🐰' }); // Pâques
+
+        const mardiGras = new Date(easter); mardiGras.setDate(easter.getDate() - 47);
+        holidays.push({ d: mardiGras, e: '🎭' }); // Mardi Gras
+
+        const ascension = new Date(easter); ascension.setDate(easter.getDate() + 39);
+        holidays.push({ d: ascension, e: '🌉' }); // Ascension (Le Pont !)
+
+        const pentecote = new Date(easter); pentecote.setDate(easter.getDate() + 49);
+        holidays.push({ d: pentecote, e: '🕊️' }); // Pentecôte
+
+        // 2. Fêtes "Nième jour du mois"
+        
+        // Blue Monday (3ème Lundi de Janvier)
+        let blueMonday = new Date(year, 0, 1);
+        while(blueMonday.getDay() !== 1) blueMonday.setDate(blueMonday.getDate() + 1); // 1er lundi
+        blueMonday.setDate(blueMonday.getDate() + 14); // + 2 semaines
+        holidays.push({ d: blueMonday, e: '☕' });
+
+        // Fête des Mères (Dernier Dimanche Mai, sauf si Pentecôte)
+        let mothers = new Date(year, 4, 31); // 31 Mai
+        while(mothers.getDay() !== 0) mothers.setDate(mothers.getDate() - 1); // Dernier dimanche
+        if (mothers.getTime() === pentecote.getTime()) mothers.setDate(mothers.getDate() + 7); // Décalage si Pentecôte
+        holidays.push({ d: mothers, e: '💐' });
+
+        // Fête des Pères (3ème Dimanche Juin)
+        let fathers = new Date(year, 5, 1);
+        while(fathers.getDay() !== 0) fathers.setDate(fathers.getDate() + 1); // 1er dimanche
+        fathers.setDate(fathers.getDate() + 14); // + 2 semaines
+        holidays.push({ d: fathers, e: '👔' });
+
+        // Black Friday (4ème Vendredi Novembre)
+        let blackFri = new Date(year, 10, 1);
+        while(blackFri.getDay() !== 5) blackFri.setDate(blackFri.getDate() + 1); // 1er vendredi
+        blackFri.setDate(blackFri.getDate() + 21); // + 3 semaines
+        holidays.push({ d: blackFri, e: '🛍️' });
+
+        return holidays;
+    }
+
+    function updateEasterEgg() {
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const currentYear = today.getFullYear();
+        
+        // On récupère les fêtes de l'année précédente, actuelle et suivante
+        // pour gérer les chevauchements (ex: Blue Monday début janvier proche de fin décembre)
+        const allHolidays = [
+            ...getHolidays(currentYear - 1),
+            ...getHolidays(currentYear),
+            ...getHolidays(currentYear + 1)
+        ];
+
+        let icon = '🚲';
+        
+        for (let h of allHolidays) {
+            let diff = Math.abs((h.d - today) / (1000 * 60 * 60 * 24));
+            if (diff <= 4) {
+                icon = h.e;
+                break; // On a trouvé une fête proche
+            }
+        }
+        document.getElementById('headerIcon').innerText = icon;
+    }
+
     async function checkWeather() {
         const r = document.getElementById('result'), l = document.getElementById('loadingMessage'), w = document.getElementById('welcome');
         stopAnimations(); w.style.display = 'none'; r.style.display = 'none'; l.style.display = 'block';
@@ -277,58 +358,87 @@
             if (!gD.results) throw new Error("Ville introuvable.");
             const wR = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${gD.results[0].latitude}&longitude=${gD.results[0].longitude}&current_weather=true&hourly=temperature_2m,precipitation_probability,weathercode,windspeed_10m&timezone=auto`);
             cachedData = await wR.json();
+            currentCityName = gD.results[0].name;
             addDay = 0; updateBtn();
-            analyze(cachedData, gD.results[0].name);
+            analyze(cachedData, currentCityName);
         } catch (e) { alert(e.message); w.style.display = 'block'; } finally { l.style.display = 'none'; }
     }
-    function toggleTomorrow() { if(!cachedData) return; addDay = addDay === 0 ? 1 : 0; updateBtn(); analyze(cachedData, userPrefs.city); }
+    
+    function isEveningOver() { const cH = new Date().getHours(); const re = parseInt(userPrefs.returnEnd.split(':')[0]); return cH >= re; }
+    function toggleTomorrow() { if(!cachedData) return; addDay = addDay === 0 ? 1 : 0; updateBtn(); analyze(cachedData, currentCityName); }
     function updateBtn() { 
-        const btn = document.getElementById('btnTom');
-        const isTom = addDay === 1;
-        btn.innerHTML = isTom ? '<span class="btn-emoji">🔙</span> Retour' : '<span class="btn-emoji">📅</span> Et demain ?';
+        const btn = document.getElementById('btnTom'); const activeState = addDay === 1; const late = isEveningOver();
+        if (activeState) { btn.innerHTML = '<span class="btn-emoji">🔙</span> Retour'; } 
+        else { if (late) { btn.innerHTML = '<span class="btn-emoji">📅</span> Et après-demain ?'; } else { btn.innerHTML = '<span class="btn-emoji">📅</span> Et demain ?'; } }
     }
+    
     function analyze(d, city) {
         const h = d.hourly, cH = new Date().getHours();
         const gs = parseInt(userPrefs.goStart.split(':')[0]), ge = parseInt(userPrefs.goEnd.split(':')[0]);
         const rs = parseInt(userPrefs.returnStart.split(':')[0]), re = parseInt(userPrefs.returnEnd.split(':')[0]);
         let off = 0, cM = true, cE = true;
+        
         if (cH >= re) off = 24; else if (cH >= ge) cM = false;
         if (addDay === 1) { cM = true; cE = true; } 
+        
+        let rejectionReasons = new Set();
         let issues = [], worst = 0, maxW = 0;
         function scan(s, e, l) {
             let rI = [], min = 100, max = -100;
             for (let i = s; i <= e; i++) {
-                const idx = i + off + (addDay * 24), t = h.temperature_2m[idx], w = h.windspeed_10m[idx], c = h.weathercode[idx];
+                const idx = i + off + (addDay * 24);
+                if (idx >= h.temperature_2m.length) continue;
+                const t = h.temperature_2m[idx], w = h.windspeed_10m[idx], c = h.weathercode[idx];
                 if(t < min) min = t; if(t > max) max = t; if(w > maxW) maxW = w;
                 if(isWorse(c, worst)) worst = c;
-                if (t < userPrefs.minTemp) rI.push(`❄️ Froid (${t}°C)`);
-                if (t > userPrefs.maxTemp) rI.push(`🥵 Chaud (${t}°C)`);
-                if (w > userPrefs.maxWind) rI.push(`💨 Vent (${w} km/h)`);
-                if ([51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,99].includes(c)) rI.push(`🌧️ Pluie`);
-                if ([71,73,75,77,85,86].includes(c)) rI.push(`❄️ Neige`);
+                
+                if (t < userPrefs.minTemp) { rI.push(`❄️ Froid (${t}°C)`); rejectionReasons.add('🥶'); }
+                if (t > userPrefs.maxTemp) { rI.push(`🥵 Chaud (${t}°C)`); rejectionReasons.add('🥵'); }
+                if (w > userPrefs.maxWind) { rI.push(`💨 Vent (${w} km/h)`); rejectionReasons.add('💨'); }
+                if ([51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,99].includes(c)) { rI.push(`🌧️ Pluie`); rejectionReasons.add('☔'); }
+                if ([71,73,75,77,85,86].includes(c)) { rI.push(`❄️ Neige`); rejectionReasons.add('☃️'); }
             }
             const colorClass = rI.length > 0 ? 'var(--no-go-text)' : 'var(--go-text)';
             const content = rI.length > 0 ? [...new Set(rI)].join(', ') : `✅ Conditions OK (${Math.round(min)}°C)`;
             return `<div class="detail-item">
                         <span class="detail-label" style="color:${colorClass}">${l} (${s}h-${e}h)</span>
-                        <span class="detail-value">${content}</span>
+                        <span class="detail-value" style="color:${colorClass}">${content}</span>
                     </div>`;
         }
-        let dayLabel = off === 24 ? "Demain" : "Aujourd'hui";
-        if (addDay === 1) dayLabel = off === 24 ? "Après-demain" : "Demain";
+        
+        let dayLabel = "Aujourd'hui";
+        if (off === 24) dayLabel = "Demain";
+        if (addDay === 1) { if (off === 24) dayLabel = "Après-demain"; else dayLabel = "Demain"; }
+        
         if (cM) issues.push(scan(gs, ge, `${dayLabel} Matin`));
         if (cE) issues.push(scan(rs, re, `${dayLabel} Soir`));
+        
         const noGo = issues.some(i => i.includes('var(--no-go-text)'));
         lastWeatherCode = worst; lastWindSpeed = maxW;
         if (userPrefs.animations) updateAnimation(worst, maxW);
         const res = document.getElementById('result');
         res.className = noGo ? 'no-go' : 'go';
-        if (!noGo) { document.getElementById('icon').innerText = "🚲✅"; document.getElementById('verdictText').innerText = "C'est bon !"; }
-        else { document.getElementById('icon').innerText = "🙅‍♂️☔"; document.getElementById('verdictText').innerText = "À éviter"; }
+        
+        if (!noGo) { 
+            document.getElementById('icon').innerText = "🚲✅"; 
+            document.getElementById('verdictText').innerText = "C'est bon !"; 
+        } else { 
+            let failEmoji = "☔";
+            if (rejectionReasons.has('☃️')) failEmoji = "☃️";
+            else if (rejectionReasons.has('☔')) failEmoji = "☔";
+            else if (rejectionReasons.has('💨')) failEmoji = "💨";
+            else if (rejectionReasons.has('🥵')) failEmoji = "🥵";
+            else if (rejectionReasons.has('🥶')) failEmoji = "🥶";
+
+            document.getElementById('icon').innerText = "🙅‍♂️" + failEmoji; 
+            document.getElementById('verdictText').innerText = "À éviter"; 
+        }
+        
         document.getElementById('detailsText').innerHTML = issues.join('');
         document.getElementById('forecastSummary').innerText = ` ${dayLabel} à ${city}.`;
         res.style.display = 'block';
     }
+    
     function isWorse(n, o) {
         const b = [51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,99,71,73,75,77,85,86], m = [1,2,3,45,48];
         if (b.includes(n)) return true; if (b.includes(o)) return false; if (m.includes(n)) return true; return false;
@@ -355,9 +465,18 @@
         c.appendChild(p);
     }
     function sim(s) { 
-        toggleView('main'); let d={hourly:{temperature_2m:Array(48).fill(20),windspeed_10m:Array(48).fill(10),weathercode:Array(48).fill(0)}}; 
-        if(s==='rain') d.hourly.weathercode.fill(63); if(s==='snow') d.hourly.weathercode.fill(71); if(s==='wind') d.hourly.windspeed_10m.fill(80); 
-        cachedData = d; addDay = 0; updateBtn(); analyze(d, "Zone Test"); document.getElementById('forecastSummary').innerText="⚠️ MODE SIMULATION"; 
+        toggleView('main'); 
+        let d={hourly:{temperature_2m:Array(72).fill(20),windspeed_10m:Array(72).fill(10),weathercode:Array(72).fill(0)}}; 
+        
+        if(s==='rain') d.hourly.weathercode.fill(63); 
+        if(s==='snow') d.hourly.weathercode.fill(71); 
+        if(s==='wind') d.hourly.windspeed_10m.fill(80); 
+        if(s==='cold') d.hourly.temperature_2m.fill(-5); 
+        if(s==='hot') d.hourly.temperature_2m.fill(38);  
+        
+        cachedData = d; addDay = 0; 
+        currentCityName = "Zone Test"; 
+        updateBtn(); analyze(d, currentCityName); document.getElementById('forecastSummary').innerText="⚠️ MODE SIMULATION"; 
     }
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) stopAnimations();
