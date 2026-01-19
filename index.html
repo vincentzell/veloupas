@@ -12,16 +12,35 @@
         :root {
             --bg-color: #f4f7f6; --card-bg: #ffffff; --text-main: #2c3e50;
             --text-muted: #7f8c8d; --input-border: #ddd; --input-bg: #fff;
-            --go-bg: #eafaf1; --go-text: #27ae60; --go-border: #d5f5e3;
-            --no-go-bg: #fff8e1; --no-go-text: #d35400; --no-go-border: #fad7a0;
-            --btn-primary: #3498db; --btn-hover: #f0f0f0;
+            
+            /* --- PALETTE DOUCE --- */
+            /* Vert (OK) */
+            --go-bg: #eafaf1;          /* Fond très clair */
+            --go-border: #a9dfbf;      /* Vert Pastel (utilisé pour le fond du bouton) */
+            --go-text: #219150;        /* Vert Foncé (texte) */
+            
+            /* Orange (NO-GO) */
+            --no-go-bg: #fdf2e9;       /* Fond très clair */
+            --no-go-border: #f5cba7;   /* Orange Pastel (utilisé pour le fond du bouton) */
+            --no-go-text: #d35400;     /* Orange Foncé (texte) */
+            
+            --btn-primary: #3498db; --btn-hover: #2980b9;
         }
         body.dark-mode {
             --bg-color: #1a1a2e; --card-bg: #16213e; --text-main: #e0e0e0;
             --text-muted: #a0a0a0; --input-border: #444; --input-bg: #0f3460;
-            --go-bg: #1e3a29; --go-text: #4cd17f; --go-border: #14522d;
-            --no-go-bg: #3e2723; --no-go-text: #ffcc80; --no-go-border: #6d4c41;
-            --btn-primary: #4facfe; --btn-hover: #233253;
+            
+            /* Vert Dark Mode */
+            --go-bg: #1e3a29; 
+            --go-border: #2e5c42; /* Bouton fond sombre mais distinct */
+            --go-text: #66e395;   /* Texte clair */
+            
+            /* Orange Dark Mode */
+            --no-go-bg: #3e2723; 
+            --no-go-border: #5d4037; 
+            --no-go-text: #ffcc80; 
+            
+            --btn-primary: #4facfe; --btn-hover: #00f2fe;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -60,24 +79,40 @@
         .time-row input { text-align: center; width: auto; min-width: 95px; flex: 1; }
         .time-label { width: 100px; text-align: left; font-weight: 600; font-size: 0.9rem;}
         
-        /* --- STYLE BOUTONS MODIFIÉ : Couleur Carte + Ombre --- */
+        /* --- STYLE DES BOUTONS DISCRETS (PASTEL) --- */
         button.action-btn { 
-            background-color: var(--card-bg); /* Fond comme la carte */
-            color: var(--text-main); /* Texte standard */
-            border: none;
-            padding: 15px; 
+            background-color: var(--btn-primary); 
+            color: white; 
+            border: none; padding: 12px; 
             border-radius: 12px; cursor: pointer; font-weight: bold; 
             width: 100%; font-size: 1.1rem; margin-top: 15px; 
-            transition: transform 0.1s, box-shadow 0.2s;
+            transition: all 0.2s ease;
             display: flex; justify-content: center; align-items: center; gap: 12px;
-            
-            /* Ombre pour le relief (puisque blanc sur blanc) */
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
         }
-        button.action-btn:hover { background-color: var(--btn-hover); transform: translateY(-1px); }
-        button.action-btn:active { transform: scale(0.98); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        button.action-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        button.action-btn:active { transform: scale(0.98); }
+
+        /* Quand c'est VERT (GO) */
+        .go button.action-btn {
+            background-color: var(--go-border); /* Fond Pastel doux */
+            color: var(--go-text); /* Texte foncé lisible */
+        }
+        .go button.action-btn:hover {
+            background-color: var(--go-text); /* Devient foncé au survol */
+            color: white;
+        }
+
+        /* Quand c'est ORANGE (NO-GO) */
+        .no-go button.action-btn {
+            background-color: var(--no-go-border); /* Fond Pastel doux */
+            color: var(--no-go-text); /* Texte foncé lisible */
+        }
+        .no-go button.action-btn:hover {
+            background-color: var(--no-go-text); /* Devient foncé au survol */
+            color: white;
+        }
         
-        .btn-emoji { font-size: 1.4rem; }
+        .btn-emoji { font-size: 1.2rem; }
 
         .toggle-group { display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid var(--input-border); padding-bottom: 15px; }
         .toggle-container { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.8rem; font-weight: 600; }
@@ -92,13 +127,16 @@
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
         #result { margin-top: 20px; display: none; }
         .verdict { font-size: 2rem; font-weight: 800; display: block; margin: 15px 0; }
-        .go { color: var(--go-text); background: var(--go-bg); border: 1px solid var(--go-border); padding: 20px; border-radius: 16px; }
-        .no-go { color: var(--no-go-text); background: var(--no-go-bg); border: 1px solid var(--no-go-border); padding: 20px; border-radius: 16px; }
+        
+        /* Conteneurs de résultat */
+        /* Note: j'ai allégé les bordures pour que ça fasse plus "bloc de couleur doux" */
+        .go { color: var(--go-text); background: var(--go-bg); border: 1px solid transparent; padding: 20px; border-radius: 16px; }
+        .no-go { color: var(--no-go-text); background: var(--no-go-bg); border: 1px solid transparent; padding: 20px; border-radius: 16px; }
         
         .detail-item {
             display: flex; flex-direction: column; 
             align-items: center; text-align: center;
-            background: rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.5); /* Plus de transparence */
             padding: 10px 15px; border-radius: 10px; margin-bottom: 10px;
         }
         body.dark-mode .detail-item { background: rgba(0,0,0,0.2); }
@@ -125,7 +163,7 @@
             <span id="icon" style="font-size: 5rem; display: block; margin-bottom: 10px;"></span>
             <span id="verdictText" class="verdict"></span>
             <div id="detailsText" style="width: 100%; margin-top: 20px;"></div>
-            <div id="forecastSummary" style="margin: 15px 0; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.1); font-size: 0.9rem; color: var(--text-muted); font-style: italic;"></div>
+            <div id="forecastSummary" style="margin: 15px 0; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.05); font-size: 0.9rem; color: inherit; opacity: 0.8; font-style: italic;"></div>
             
             <button class="action-btn" onclick="checkWeather()">
                 <span class="btn-emoji">🔄</span> Rafraîchir
