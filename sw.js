@@ -1,23 +1,41 @@
-const CACHE_NAME = 'velotaf-v1';
+// J'ai changé v1 en v2 pour forcer la mise à jour
+const CACHE_NAME = 'velotaf-v2';
+
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './icon.png'
+  // ATTENTION : Vérifiez que ce fichier existe bien. 
+  // Si vous utilisez maintenant icon-192.png, mettez le bon nom ici !
+  './icon.png' 
 ];
 
-// Installation du Service Worker
+// Installation
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
+  // Force le nouveau SW à s'activer immédiatement
+  self.skipWaiting();
 });
 
-// Récupération des fichiers (Cache first, network fallback)
+// Activation (Nettoyage des vieux caches v1)
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+      );
+    })
+  );
+  self.clients.claim();
+});
+
+// Fetch (Network First pour le développement, c'est plus sûr)
+// Cette stratégie tente d'abord Internet, et sinon le cache (hors ligne)
 self.addEventListener('fetch', (e) => {
   e.respondWith(
-    caches.match(e.request).then((response) => {
-      return response || fetch(e.request);
-    })
+    fetch(e.request)
+      .catch(() => caches.match(e.request))
   );
 });
