@@ -349,15 +349,19 @@
         document.getElementById('headerIcon').innerText = icon;
     }
 
-    async function checkWeather() {
+async function checkWeather() {
         const r = document.getElementById('result'), l = document.getElementById('loadingMessage'), w = document.getElementById('welcome');
         stopAnimations(); w.style.display = 'none'; r.style.display = 'none'; l.style.display = 'block';
         try {
             const gR = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${userPrefs.city}&count=1&language=fr&format=json`);
             const gD = await gR.json();
             if (!gD.results) throw new Error("Ville introuvable.");
-            const wR = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${gD.results[0].latitude}&longitude=${gD.results[0].longitude}&current_weather=true&hourly=temperature_2m,precipitation_probability,weathercode,windspeed_10m&timezone=auto`);
-            cachedData = await wR.json();
+            const lat = gD.results[0].latitude, lon = gD.results[0].longitude;
+            const wR = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,precipitation_probability,weathercode,windspeed_10m&timezone=auto&models=meteofrance_seamless`);
+            const raw = await wR.json();
+            const h = raw.hourly, clean = { hourly: {} };
+            Object.keys(h).forEach(k => clean.hourly[k.replace('_meteofrance_seamless', '')] = h[k]);
+            cachedData = clean;
             currentCityName = gD.results[0].name;
             addDay = 0; updateBtn();
             analyze(cachedData, currentCityName);
@@ -484,4 +488,5 @@
     });
 </script>
 </body>
+
 </html>
