@@ -12,16 +12,8 @@
         :root {
             --bg-color: #f4f7f6; --card-bg: #ffffff; --text-main: #2c3e50;
             --text-muted: #7f8c8d; --input-border: #ddd; --input-bg: #fff;
-            
-            /* --- PALETTE DOUCE --- */
-            --go-bg: #eafaf1;          
-            --go-border: #a9dfbf;      
-            --go-text: #219150;        
-            
-            --no-go-bg: #fdf2e9;       
-            --no-go-border: #f5cba7;   
-            --no-go-text: #d35400;     
-            
+            --go-bg: #eafaf1; --go-border: #a9dfbf; --go-text: #219150;     
+            --no-go-bg: #fdf2e9; --no-go-border: #f5cba7; --no-go-text: #d35400;     
             --btn-primary: #3498db; --btn-hover: #2980b9;
         }
         body.dark-mode {
@@ -62,9 +54,14 @@
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; width: 100%; }
         .header-left { flex: 1; text-align: left; font-size: 1.5rem; }
         .header-right { flex: 1; text-align: right; }
-        h1 { flex: 2; text-align: center; margin: 0; font-size: 1.4rem; white-space: nowrap; }
+        h1 { flex: 2; text-align: center; margin: 0; font-size: 1.4rem; white-space: nowrap; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .settings-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 0; color: var(--text-main); }
         
+        .holiday-info {
+            font-size: 0.75rem; color: var(--text-muted); font-weight: normal; margin-top: 4px; display: none; white-space: normal; line-height: 1.2;
+        }
+        .holiday-info.visible { display: block; }
+
         .form-group { margin-bottom: 15px; }
         .form-group label { text-align: left; display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem;}
         .form-group input { background-color: var(--input-bg); color: var(--text-main); border: 2px solid var(--input-border); width: 100%; padding: 10px; box-sizing: border-box; border-radius: 8px; font-size: 1rem; }
@@ -128,7 +125,10 @@
     <div id="mainView" class="view-section active">
         <header>
             <div class="header-left" id="headerIcon">🚲</div>
-            <h1>Météo Vélotaf</h1>
+            <h1>
+                Météo Vélotaf
+                <span id="holidayInfo" class="holiday-info"></span>
+            </h1>
             <div class="header-right">
                 <button class="settings-btn" onclick="toggleView('settings')">⚙️</button>
             </div>
@@ -145,7 +145,7 @@
             </button>
             
             <button class="action-btn" id="btnTom" onclick="toggleTomorrow()">
-                </button>
+            </button>
         </div>
         <div id="welcome" style="display:none; margin-top: 30px;">
             <p style="font-size: 1.1rem; margin-bottom: 20px;">Bonjour ! 👋<br>Configurez vos horaires.</p>
@@ -201,6 +201,7 @@
                     <button class="debug-btn" onclick="sim('wind')">💨 Vent</button>
                     <button class="debug-btn" onclick="sim('cold')">🥶 Froid</button>
                     <button class="debug-btn" onclick="sim('hot')">🥵 Chaud</button>
+                    <button class="debug-btn" onclick="sim('wet')">💧 Mouillé</button>
                 </div>
             </div>
         </div>
@@ -257,69 +258,55 @@
         localStorage.setItem('veloTafPrefs', JSON.stringify(userPrefs)); toggleView('main'); checkWeather();
     }
 
-    // --- EASTER EGG & DATES ---
-    
-    // Algorithme de Pâques
     function getEasterDate(year) {
         const f = Math.floor, G = year % 19, C = f(year / 100), H = (C - f(C / 4) - f((8 * C + 13) / 25) + 19 * G + 15) % 30, I = H - f(H / 28) * (1 - f(29 / (H + 1)) * f((21 - G) / 11)), J = (year + f(year / 4) + I + 2 - C + f(C / 4)) % 7, L = I - J, month = 3 + f((L + 40) / 44), day = L + 28 - 31 * f(month / 4);
         return new Date(year, month - 1, day);
     }
 
-    // Génère la liste de toutes les fêtes pour une année donnée
     function getHolidays(year) {
         const holidays = [
-            // --- FIXES ---
-            { d: new Date(year, 0, 1), e: '🥂' },   // Nouvel An
-            { d: new Date(year, 1, 14), e: '💘' },  // St Valentin
-            { d: new Date(year, 2, 17), e: '🍀' },  // St Patrick
-            { d: new Date(year, 3, 1), e: '🐟' },   // 1er Avril
-            { d: new Date(year, 4, 1), e: '🌱' },   // 1er Mai
-            { d: new Date(year, 5, 21), e: '🎸' },  // Musique
-            { d: new Date(year, 6, 14), e: '🎆' },  // 14 Juillet
-            { d: new Date(year, 9, 31), e: '🎃' },  // Halloween
-            { d: new Date(year, 11, 25), e: '🎄' }, // Noël
+            { d: new Date(year, 0, 1), e: '🥂', n: 'Nouvel An' },
+            { d: new Date(year, 1, 14), e: '💘', n: 'St-Valentin' },
+            { d: new Date(year, 2, 17), e: '🍀', n: 'St-Patrick' },
+            { d: new Date(year, 3, 1), e: '🐟', n: 'Poisson d\'Avril' },
+            { d: new Date(year, 4, 1), e: '🌱', n: 'Fête du Travail' },
+            { d: new Date(year, 5, 21), e: '🎸', n: 'Fête de la Musique' },
+            { d: new Date(year, 6, 14), e: '🎆', n: 'Fête Nationale' },
+            { d: new Date(year, 9, 31), e: '🎃', n: 'Halloween' },
+            { d: new Date(year, 11, 25), e: '🎄', n: 'Noël' },
         ];
 
-        // --- CALCULEES / MOBILES ---
-        
-        // 1. Pâques et dérivés
         const easter = getEasterDate(year);
-        holidays.push({ d: easter, e: '🐰' }); // Pâques
+        holidays.push({ d: easter, e: '🐰', n: 'Pâques' });
 
         const mardiGras = new Date(easter); mardiGras.setDate(easter.getDate() - 47);
-        holidays.push({ d: mardiGras, e: '🎭' }); // Mardi Gras
+        holidays.push({ d: mardiGras, e: '🎭', n: 'Mardi Gras' });
 
         const ascension = new Date(easter); ascension.setDate(easter.getDate() + 39);
-        holidays.push({ d: ascension, e: '🌉' }); // Ascension (Le Pont !)
+        holidays.push({ d: ascension, e: '🌉', n: 'Ascension' });
 
         const pentecote = new Date(easter); pentecote.setDate(easter.getDate() + 49);
-        holidays.push({ d: pentecote, e: '🕊️' }); // Pentecôte
+        holidays.push({ d: pentecote, e: '🕊️', n: 'Pentecôte' });
 
-        // 2. Fêtes "Nième jour du mois"
-        
-        // Blue Monday (3ème Lundi de Janvier)
         let blueMonday = new Date(year, 0, 1);
-        while(blueMonday.getDay() !== 1) blueMonday.setDate(blueMonday.getDate() + 1); // 1er lundi
-        blueMonday.setDate(blueMonday.getDate() + 14); // + 2 semaines
-        holidays.push({ d: blueMonday, e: '☕' });
+        while(blueMonday.getDay() !== 1) blueMonday.setDate(blueMonday.getDate() + 1);
+        blueMonday.setDate(blueMonday.getDate() + 14);
+        holidays.push({ d: blueMonday, e: '☕', n: 'Blue Monday' });
 
-        // Fête des Mères (Dernier Dimanche Mai, sauf si Pentecôte)
-        let mothers = new Date(year, 4, 31); // 31 Mai
-        while(mothers.getDay() !== 0) mothers.setDate(mothers.getDate() - 1); // Dernier dimanche
-        if (mothers.getTime() === pentecote.getTime()) mothers.setDate(mothers.getDate() + 7); // Décalage si Pentecôte
-        holidays.push({ d: mothers, e: '💐' });
+        let mothers = new Date(year, 4, 31);
+        while(mothers.getDay() !== 0) mothers.setDate(mothers.getDate() - 1);
+        if (mothers.getTime() === pentecote.getTime()) mothers.setDate(mothers.getDate() + 7);
+        holidays.push({ d: mothers, e: '💐', n: 'Fête des Mères' });
 
-        // Fête des Pères (3ème Dimanche Juin)
         let fathers = new Date(year, 5, 1);
-        while(fathers.getDay() !== 0) fathers.setDate(fathers.getDate() + 1); // 1er dimanche
-        fathers.setDate(fathers.getDate() + 14); // + 2 semaines
-        holidays.push({ d: fathers, e: '👔' });
+        while(fathers.getDay() !== 0) fathers.setDate(fathers.getDate() + 1);
+        fathers.setDate(fathers.getDate() + 14);
+        holidays.push({ d: fathers, e: '👔', n: 'Fête des Pères' });
 
-        // Black Friday (4ème Vendredi Novembre)
         let blackFri = new Date(year, 10, 1);
-        while(blackFri.getDay() !== 5) blackFri.setDate(blackFri.getDate() + 1); // 1er vendredi
-        blackFri.setDate(blackFri.getDate() + 21); // + 3 semaines
-        holidays.push({ d: blackFri, e: '🛍️' });
+        while(blackFri.getDay() !== 5) blackFri.setDate(blackFri.getDate() + 1);
+        blackFri.setDate(blackFri.getDate() + 21);
+        holidays.push({ d: blackFri, e: '🛍️', n: 'Black Friday' });
 
         return holidays;
     }
@@ -329,8 +316,6 @@
         today.setHours(0,0,0,0);
         const currentYear = today.getFullYear();
         
-        // On récupère les fêtes de l'année précédente, actuelle et suivante
-        // pour gérer les chevauchements (ex: Blue Monday début janvier proche de fin décembre)
         const allHolidays = [
             ...getHolidays(currentYear - 1),
             ...getHolidays(currentYear),
@@ -338,15 +323,28 @@
         ];
 
         let icon = '🚲';
+        let holidayName = '';
+        let holidayDate = '';
         
         for (let h of allHolidays) {
             let diff = Math.abs((h.d - today) / (1000 * 60 * 60 * 24));
             if (diff <= 4) {
                 icon = h.e;
-                break; // On a trouvé une fête proche
+                holidayName = h.n;
+                const options = { day: 'numeric', month: 'long' };
+                holidayDate = h.d.toLocaleDateString('fr-FR', options);
+                break;
             }
         }
         document.getElementById('headerIcon').innerText = icon;
+        
+        const hInfo = document.getElementById('holidayInfo');
+        if (holidayName) {
+            hInfo.innerText = `${holidayName} (${holidayDate})`;
+            hInfo.classList.add('visible');
+        } else {
+            hInfo.classList.remove('visible');
+        }
     }
 
 async function checkWeather() {
@@ -387,8 +385,20 @@ async function checkWeather() {
         
         let rejectionReasons = new Set();
         let issues = [], worst = 0, maxW = 0;
+
+        const rainCodes = [51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,99];
+        const snowCodes = [71,73,75,77,85,86];
+
         function scan(s, e, l) {
             let rI = [], min = 100, max = -100;
+            const prevIdx = s - 1 + off + (addDay * 24);
+            if (prevIdx >= 0 && prevIdx < h.weathercode.length) {
+                const prevCode = h.weathercode[prevIdx];
+                if (rainCodes.includes(prevCode)) {
+                    rI.push(`💧 Route mouillée`);
+                }
+            }
+
             for (let i = s; i <= e; i++) {
                 const idx = i + off + (addDay * 24);
                 if (idx >= h.temperature_2m.length) continue;
@@ -399,13 +409,16 @@ async function checkWeather() {
                 if (t < userPrefs.minTemp) { rI.push(`❄️ Froid (${t}°C)`); rejectionReasons.add('🥶'); }
                 if (t > userPrefs.maxTemp) { rI.push(`🥵 Chaud (${t}°C)`); rejectionReasons.add('🥵'); }
                 if (w > userPrefs.maxWind) { rI.push(`💨 Vent (${w} km/h)`); rejectionReasons.add('💨'); }
-                if ([51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,99].includes(c)) { rI.push(`🌧️ Pluie`); rejectionReasons.add('☔'); }
-                if ([71,73,75,77,85,86].includes(c)) { rI.push(`❄️ Neige`); rejectionReasons.add('☃️'); }
+                if (rainCodes.includes(c)) { rI.push(`🌧️ Pluie`); rejectionReasons.add('☔'); }
+                if (snowCodes.includes(c)) { rI.push(`❄️ Neige`); rejectionReasons.add('☃️'); }
             }
             const colorClass = rI.length > 0 ? 'var(--no-go-text)' : 'var(--go-text)';
+            const strictIssues = rI.filter(i => !i.includes('Route mouillée'));
+            const titleColor = strictIssues.length > 0 ? 'var(--no-go-text)' : 'var(--go-text)';
+            
             const content = rI.length > 0 ? [...new Set(rI)].join(', ') : `✅ Conditions OK (${Math.round(min)}°C)`;
             return `<div class="detail-item">
-                        <span class="detail-label" style="color:${colorClass}">${l} (${s}h-${e}h)</span>
+                        <span class="detail-label" style="color:${titleColor}">${l} (${s}h-${e}h)</span>
                         <span class="detail-value" style="color:${colorClass}">${content}</span>
                     </div>`;
         }
@@ -417,7 +430,7 @@ async function checkWeather() {
         if (cM) issues.push(scan(gs, ge, `${dayLabel} Matin`));
         if (cE) issues.push(scan(rs, re, `${dayLabel} Soir`));
         
-        const noGo = issues.some(i => i.includes('var(--no-go-text)'));
+        const noGo = rejectionReasons.size > 0;
         lastWeatherCode = worst; lastWindSpeed = maxW;
         if (userPrefs.animations) updateAnimation(worst, maxW);
         const res = document.getElementById('result');
@@ -476,9 +489,13 @@ async function checkWeather() {
         if(s==='snow') d.hourly.weathercode.fill(71); 
         if(s==='wind') d.hourly.windspeed_10m.fill(80); 
         if(s==='cold') d.hourly.temperature_2m.fill(-5); 
-        if(s==='hot') d.hourly.temperature_2m.fill(38);  
+        if(s==='hot') d.hourly.temperature_2m.fill(38);
+        if(s==='wet') { 
+            d.hourly.weathercode[7 + (addDay*24)] = 63; 
+            d.hourly.weathercode[16 + (addDay*24)] = 63; 
+        }
         
-        cachedData = d; addDay = 0; 
+        cachedData = d;
         currentCityName = "Zone Test"; 
         updateBtn(); analyze(d, currentCityName); document.getElementById('forecastSummary').innerText="⚠️ MODE SIMULATION"; 
     }
@@ -488,5 +505,4 @@ async function checkWeather() {
     });
 </script>
 </body>
-
 </html>
